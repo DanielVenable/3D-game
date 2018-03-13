@@ -1,0 +1,81 @@
+<html><head><title>3D game</title>
+<script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" 
+integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8=" 
+crossorigin="anonymous"></script><style>
+div {
+	position: absolute;
+}
+</style></head><body>
+<span id="world"></span></body><script>
+var objects = [],
+	speed = 0.2,
+	level = 0;
+next_level();
+function next_level() {
+	level++;
+	$('#world').empty();
+	switch (level) {
+		case 1:
+			new_obj(0,0,0, 100,100,100, 'wall','black');
+		break;
+	}
+}
+function draw_cube() {
+	$('#world').empty();
+	objects.forEach(function(e) {
+		$('#world').append(
+			'<div style="background-color:'+e.color+';top:'+(520+e.y)+';left:'
+			+(520+e.x)+';width:'+e.width+';height:'+e.height+';"></div>');
+	});
+}
+
+function view_right() {
+	objects.forEach(function(e) {
+		e.New_z = -e.x;
+		e.x = e.z;
+		e.z = e.New_z;
+		e.New_depth = e.width;
+		e.width = e.depth;
+		e.depth = e.New_depth;
+	});
+	draw_cube();
+}
+
+function tilt_clockwise() {
+	objects.forEach(function(e) {
+		e.New_y = -e.x;
+		e.x = e.y;
+		e.y = e.New_y;
+		e.New_height = e.width;
+		e.width = e.height;
+		e.height = e.New_height;
+	});
+	draw_cube();
+}
+
+function new_obj(objx, objy, objz, objwidth, objheight, objdepth, objtype, objcolor) {
+	objects.push({
+		x:objx, y:objy, z:objz, width:objwidth, height:objheight,
+		depth:objdepth, type:objtype, color:objcolor});
+}
+
+function overlap1d(left1, width1, left2, width2) {
+	return (
+		(left1 <= left2 && left2 <= left1 + width1) || 
+		(left2 <= left1 && left1 <= left2 + width2));
+}
+
+function overlap(object1, object2) {
+	var xol = overlap1d(object1.x, object1.width, object2.x, object2.width),
+		yol = overlap1d(object1.y, object1.height, object2.y, object2.height),
+		zol = overlap1d(object1.z, object1.depth, object2.z, object2.depth);
+	return (xol && yol && zol);
+}
+
+function fall() {
+	speed += 0.2;
+	objects.forEach(function(e) {
+		console.log($(this));
+	});
+}
+</script></html>
