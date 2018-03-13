@@ -1,9 +1,14 @@
 <html><head><title>3D game</title>
-<script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" 
+<script src="https://code.jquery.com/jquery-3.1.0.slim.min.js"
 integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8=" 
 crossorigin="anonymous"></script><style>
 div {
 	position: absolute;
+}
+img {
+	position: absolute;
+	height: 20px;
+	width: 20px;
 }
 </style></head><body>
 <span id="world"></span></body><script>
@@ -13,6 +18,7 @@ var objects = [],
 next_level();
 function next_level() {
 	level++;
+	objects.length = 0;
 	$('#world').empty();
 	switch (level) {
 		case 1:
@@ -24,13 +30,18 @@ function next_level() {
 function draw_cube() {
 	$('#world').empty();
 	objects.forEach(function(e) {
-		$('#world').append(
-			'<div style="background-color:'+e.color+';top:'+(520+e.y)+';left:'
-			+(520+e.x)+';width:'+e.width+';height:'+e.height+';"></div>');
+		if (e.type == 'ball') {
+			$('#world').append(
+			'<img src="ball.png" style="top:'+(520+e.y)+';left:'+(520+e.x)+'";/>');
+		} else {
+			$('#world').append(
+				'<div style="background-color:'+e.color+';top:'+(520+e.y)+';left:'
+				+(520+e.x)+';width:'+e.width+';height:'+e.height+';"></div>');
+		} 
 	});
 }
 
-function view_right() {
+function view_right() { 
 	objects.forEach(function(e) {
 		e.New_z = -e.x;
 		e.x = e.z;
@@ -54,7 +65,7 @@ function tilt_clockwise() {
 	draw_cube();
 }
 
-function new_obj(objx, objy, objz, objwidth, objheight, objdepth, objtype, objcolor) {
+function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
 	objects.push({
 		x:objx, y:objy, z:objz, width:objwidth, height:objheight,
 		depth:objdepth, type:objtype, color:objcolor});
