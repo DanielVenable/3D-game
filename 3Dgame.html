@@ -16,13 +16,14 @@ var objects = [],
 	speed = 0.2,
 	level = 0;
 next_level();
+fall();
 function next_level() {
 	level++;
 	objects.length = 0;
 	$('#world').empty();
 	switch (level) {
 		case 1:
-			
+			new_obj('ball',100,100,100);
 		break;
 	}
 	draw_cube();
@@ -32,7 +33,7 @@ function draw_cube() {
 	objects.forEach(function(e) {
 		if (e.type == 'ball') {
 			$('#world').append(
-			'<img src="ball.png" style="top:'+(520+e.y)+';left:'+(520+e.x)+'";/>');
+			'<img src="ball.png" style="top:'+(520-e.y)+';left:'+(520+e.x)+'";/>');
 		} else {
 			$('#world').append(
 				'<div style="background-color:'+e.color+';top:'+(520+e.y)+';left:'
@@ -88,8 +89,10 @@ function fall() {
 	speed += 0.2;
 	objects.forEach(function(e) {
 		if (e.type == 'ball') {
-			//fall
+			e.y = e.y - speed;
+			draw_cube();
 		}
 	});
+	setTimeout(fall, 0); //keep falling
 }
 </script></html>
