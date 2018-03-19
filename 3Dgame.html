@@ -23,7 +23,7 @@ function next_level() {
 	$('#world').empty();
 	switch (level) {
 		case 1:
-			new_obj('wall',100,100,100, 10,100,200, 'black');
+			new_obj('wall',0,0,0, 100,100,100, 'black');
 		break;
 	}
 	draw_cube();
@@ -33,12 +33,12 @@ function draw_cube() {
 	objects.forEach(function(e) {
 		if (e.type == 'ball') {
 			$('#world').append(
-			'<img src="ball.png" style="top:'+(520-e.y)+';left:'+(520+e.x)+'";/>');
-		} else {
-			$('#world').append(
-				'<div style="background-color:'+e.color+';top:'+(520+e.y)+';left:'
-				+(520+e.x)+';width:'+e.width+';height:'+e.height+';"></div>');
-		} 
+			'<img src="ball.png" style="top:'+(530-e.y)+'; left:'+(510+e.x)+'";/>');
+		} else {                       //      ^ deal with centering ^
+   			$('#world').append(
+				'<div style="background-color:'+e.color+';top:'+(520-e.y+e.height/2)+';left:'
+				+(520+e.x-e.width/2)+';width:'+e.width+';height:'+e.height+';"></div>');
+		}
 	});
 }
 
@@ -54,7 +54,7 @@ function view_right() {
 	draw_cube();
 }
 
-function tilt_counter_clockwise() {
+function tilt_clockwise() {
 	objects.forEach(function(e) {
 		e.New_y = -e.x;
 		e.x = e.y;
@@ -66,7 +66,7 @@ function tilt_counter_clockwise() {
 	draw_cube();
 }
 
-function tilt_clockwise() {
+function tilt_counter_clockwise() {
 	objects.forEach(function(e) {
 		e.New_y = e.x;
 		e.x = -e.y;
@@ -80,8 +80,8 @@ function tilt_clockwise() {
 
 function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
 	objects.push({
-		x:objx, y:objy, z:objz, width:objwidth, height:objheight,
-		depth:objdepth, type:objtype, color:objcolor});
+		x:objx + objwidth/2, y:objy + objheight/2, z:objz + objdepth/2,
+		width:objwidth, height:objheight, depth:objdepth, type:objtype, color:objcolor});
 }
 
 function overlap1d(left1, width1, left2, width2) {
@@ -100,7 +100,7 @@ function overlap(object1, object2) {
 function fall() {
 	speed += 0.2;
 	objects.forEach(function(e) {
-		if (e.type == 'ball') {
+		if (e.type == 'ball' || e.type == 'moveable') {
 			e.y = e.y - speed;
 			draw_cube();
 		}
