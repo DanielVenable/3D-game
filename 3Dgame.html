@@ -66,6 +66,18 @@ function tilt_clockwise() {
 	draw_cube();
 }
 
+function tilt_counter_clockwise() {
+	objects.forEach(function(e) {
+		e.New_y = e.x;
+		e.x = -e.y;
+		e.y = e.New_y;
+		e.New_height = e.width;
+		e.width = e.height;
+		e.height = e.New_height;
+	});
+	draw_cube();
+}
+
 function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
 	objects.push({
 		x:objx, y:objy, z:objz, width:objwidth, height:objheight,
@@ -95,4 +107,12 @@ function fall() {
 	});
 	setTimeout(fall, 0); //keep falling
 }
+
+$(document).keypress(function(e) {
+	switch(e.which) {
+		case 37: tilt_counter_clockwise(); break;
+		case 39: tilt_clockwise(); break;
+	}
+});
+
 </script></html>
