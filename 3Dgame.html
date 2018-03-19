@@ -23,7 +23,7 @@ function next_level() {
 	$('#world').empty();
 	switch (level) {
 		case 1:
-			new_obj('ball',100,100,100);
+			new_obj('wall',100,100,100, 10,100,200, 'black');
 		break;
 	}
 	draw_cube();
@@ -54,7 +54,7 @@ function view_right() {
 	draw_cube();
 }
 
-function tilt_clockwise() {
+function tilt_counter_clockwise() {
 	objects.forEach(function(e) {
 		e.New_y = -e.x;
 		e.x = e.y;
@@ -66,7 +66,7 @@ function tilt_clockwise() {
 	draw_cube();
 }
 
-function tilt_counter_clockwise() {
+function tilt_clockwise() {
 	objects.forEach(function(e) {
 		e.New_y = e.x;
 		e.x = -e.y;
@@ -108,7 +108,7 @@ function fall() {
 	setTimeout(fall, 0); //keep falling
 }
 
-$(document).keypress(function(e) {
+$(document).keydown(function(e) {
 	switch(e.which) {
 		case 37: tilt_counter_clockwise(); break;
 		case 39: tilt_clockwise(); break;
