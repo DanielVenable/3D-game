@@ -23,7 +23,8 @@ function next_level() {
 	$('#world').empty();
 	switch (level) {
 		case 1:
-			new_obj('wall',0,0,0, 100,100,100, 'black');
+			new_obj('wall',0,-500,500, 1000,10,100, 'black');
+			new_obj('movable',0,-500,500, 100,100,100, 'gray');
 		break;
 	}
 	draw_cube();
@@ -79,9 +80,8 @@ function tilt_counter_clockwise() {
 }
 
 function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
-	objects.push({
-		x:objx + objwidth/2, y:objy + objheight/2, z:objz + objdepth/2,
-		width:objwidth, height:objheight, depth:objdepth, type:objtype, color:objcolor});
+	objects.push({  x:objx, y:objy, z:objz,width:objwidth, height:objheight,
+					depth:objdepth, type:objtype, color:objcolor});
 }
 
 function overlap1d(left1, width1, left2, width2) {
@@ -91,17 +91,26 @@ function overlap1d(left1, width1, left2, width2) {
 }
 
 function overlap(object1, object2) {
-	var xol = overlap1d(object1.x, object1.width, object2.x, object2.width),
-		yol = overlap1d(object1.y, object1.height, object2.y, object2.height),
-		zol = overlap1d(object1.z, object1.depth, object2.z, object2.depth);
+	var xol = overlap1d(-object1.x+object1.width/2, object1.width,
+						-object2.x+object2.width/2, object2.width),
+		yol = overlap1d(object1.y-object1.height/2, object1.height,
+						object2.y-object2.height/2, object2.height),
+		zol = overlap1d(-object1.z+object1.depth/2, object1.depth,
+						-object2.z+object2.depth/2, object2.depth);
 	return (xol && yol && zol);
-}
+} // not working.
 
 function fall() {
 	speed += 0.2;
-	objects.forEach(function(e) {
-		if (e.type == 'ball' || e.type == 'moveable') {
+	objects.forEach(function(e,f) {
+		if (e.type == 'ball' || e.type == 'movable') {
 			e.y = e.y - speed;
+			objects.forEach(function(g, h) {
+				if (overlap(e, g) && h != f) {
+					e.y = e.y + speed;
+					speed = 0.2;
+				}
+			});
 			draw_cube();
 		}
 	});
