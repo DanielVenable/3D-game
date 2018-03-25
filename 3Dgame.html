@@ -24,7 +24,7 @@ function next_level() {
 	switch (level) { // greater z means closer
 		case 1:
 			new_obj('wall',0,-500,500, 1000,10,100, 'black');
-			new_obj('movable',0,-500,500, 100,100,100, 'gray');
+			new_obj('wall',0,-500,500, 100,100,100, 'gray');
 		break;
 	}
 	draw_cube();
@@ -47,6 +47,17 @@ function view_right() {
 	objects.forEach(function(e) {
 		e.New_z = -e.x;
 		e.x = e.z;
+		e.z = e.New_z;
+		e.New_depth = e.width;
+		e.width = e.depth;
+		e.depth = e.New_depth;
+	});
+	draw_cube();
+}
+function view_left() { 
+	objects.forEach(function(e) {
+		e.New_z = e.x;
+		e.x = -e.z;
 		e.z = e.New_z;
 		e.New_depth = e.width;
 		e.width = e.depth;
@@ -91,9 +102,12 @@ function overlap1d(x1, width1, x2, width2) {
 }
 
 function overlap(object1, object2) {
-	var xol = overlap1d(object1.x, object1.width, object2.x, object2.width),
-		yol = overlap1d(object1.y, object1.height, object2.y, object2.height),
-		zol = overlap1d(object1.z, object1.depth, object2.z, object2.depth);
+	var xol = overlap1d(object1.x-object1.width/2, object1.width,
+						object2.x-object2.width/2, object2.width),
+		yol = overlap1d(object1.y-object1.height/2, object1.height,
+						object2.y-object2.height/2, object2.height),
+		zol = overlap1d(object1.z-object1.depth/2, object1.depth,
+						object2.z-object2.depth/2, object2.depth);
 	return (xol && yol && zol);
 } // not working.
 
@@ -118,6 +132,8 @@ $(document).keydown(function(e) {
 	switch(e.which) {
 		case 37: tilt_counter_clockwise(); break;
 		case 39: tilt_clockwise(); break;
+		case 65: view_left(); break;
+		case 68: view_right(); break;
 	}
 });
 
