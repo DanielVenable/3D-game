@@ -23,8 +23,8 @@ function next_level() {
 	$('#world').empty();
 	switch (level) { // greater z means closer
 		case 1:
-			new_obj('wall',0,-500,500, 1000,10,100, 'black');
-			new_obj('movable',0,-400,500, 100,100,100, 'gray');
+			new_obj('wall',0,0,-500, 1000,1000,10, 'black');
+			new_obj('wall',0,0,500, 1000,1000,10, 'black');
 		break;
 	}
 	draw_cube();
@@ -34,11 +34,12 @@ function draw_cube() {
 	objects.forEach(function(e) {
 		if (e.type == 'ball') {
 			$('#world').append(
-			'<img src="ball.png" style="top:'+(530-e.y)+'; left:'+(510+e.x)+'";/>');
-		} else {                       //      ^ deal with centering ^
-   			$('#world').append(
-				'<div style="background-color:'+e.color+';top:'+(520-e.y-e.height/2)+';left:'
-				+(520+e.x-e.width/2)+';width:'+e.width+';height:'+e.height+';"></div>');
+			'<img src="ball.png" style="top:'+(530-e.y)+'; left:'+(510+e.x)+
+			';z-index:'+(e.z+10)+'"/>');
+		} else {
+   			$('#world').append('<div style="background-color:'+e.color+';top:'+
+			(520-e.y-e.height/2)+';left:'+(520+e.x-e.width/2)+';width:'+e.width+
+			';height:'+e.height+';z-index:'+(e.z+e.depth/2)+'"></div>');
 		}
 	});
 }
