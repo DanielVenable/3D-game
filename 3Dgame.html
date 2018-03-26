@@ -24,7 +24,7 @@ function next_level() {
 	switch (level) { // greater z means closer
 		case 1:
 			new_obj('wall',0,-500,500, 1000,10,100, 'black');
-			new_obj('wall',0,-500,500, 100,100,100, 'gray');
+			new_obj('movable',0,-400,500, 100,100,100, 'gray');
 		break;
 	}
 	draw_cube();
@@ -113,18 +113,19 @@ function overlap(object1, object2) {
 
 function fall() {
 	speed += 0.2;
-	objects.forEach(function(e,f) {
-		if (e.type == 'ball' || e.type == 'movable') {
-			e.y = e.y - speed;
-			objects.forEach(function(g, h) {
-				if (overlap(e, g) && h != f) {
-					e.y = e.y + speed;
+	for (i = 0; i < objects.length; i++) {
+		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
+			objects[i].y = objects[i].y - speed;
+			for (j = 0; j < objects.length; j++) {
+				if (overlap(objects[i], objects[j]) && i != j) {
+					objects[i].y = objects[i].y + speed;
 					speed = 0.2;
+					break;
 				}
-			});
+			}
 			draw_cube();
 		}
-	});
+	}
 	setTimeout(fall, 0); //keep falling
 }
 
