@@ -34,6 +34,7 @@ function next_level() {
 		case 1:
 			new_obj('ball', 0,0,0, 20,20,20);
 			new_obj('wall', 0,-100,0, 500,10,1000, 'black');
+			new_obj('exit', 500,-200,0, 50,50,50, 'black');
 		break;
 	}
 	draw_cube();
@@ -47,7 +48,7 @@ function draw_cube() {
 			';z-index:'+(e.z+10)+'"/>');
 		} else if (e.type == 'exit') {
 			$('#world').append('<div style="background-color:black;top:'+
-			(520-e.y-50)+';left:'+(520+e.x-50)+';width:'+e.width+
+			(470-e.y)+';left:'+(470+e.x)+';width:'+e.width+
 			';height:'+e.height+';z-index:'+(e.z+50)+'"><h1 align="center">EXIT</h1></div>');
 		} else if (e.type != 'cube side' || e.depth == 1000/*not show front or back*/) {
    			$('#world').append('<div style="background-color:'+e.color+';top:'+
@@ -106,8 +107,8 @@ function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objco
 }
 function overlap1d(x1, width1, x2, width2) {
 	return (
-		(x1 <= x2 && x2 - width2/2 <= x1 + width1/2)|| // !!!!!
-		(x2 <= x1 && x1 - width1/2 <= x2 + width2/2)); // !!!!!
+		(x1 <= x2 && x2 - width2/2 <= x1 + width1/2)||
+		(x2 <= x1 && x1 - width1/2 <= x2 + width2/2));
 }
 function overlap(object1, object2) {
 	var xol = overlap1d(object1.x, object1.width, object2.x, object2.width),
@@ -127,9 +128,9 @@ function fall() {
 						objects[i].y += 0.2;
 					}
 					speed = 0.2;
-					//if (objects[j].type == 'exit' && objects[i].type == 'ball') {
-					//	next_level();
-					//}
+					if ((objects[j].type == 'exit' && objects[i].type == 'ball') || (objects[i].type == 'exit' && objects[j].type == 'ball')) {
+						next_level();
+					}
 					break;
 				}
 			}
