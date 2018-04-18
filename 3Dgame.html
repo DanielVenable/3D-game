@@ -24,12 +24,12 @@ function next_level() {
 	level++;
 	objects = [];
 	$('#world').empty();
-	//new_obj('cube side',0,0,-500, 1000,1000,10, 'black');//back
-	//new_obj('cube side',0,0,500, 1000,1000,10, 'black');//front
-	//new_obj('cube side',-500,0,0, 10,1000,1000, 'black');//left
-	//new_obj('cube side',500,0,0, 10,1000,1000, 'black');//right
-	//new_obj('cube side',0,500,0, 1000,10,1000, 'black');//top
-	//new_obj('cube side',0,-500,0, 1000,10,1000, 'black');//bottom
+	new_obj('cube side',0,0,-500, 1000,1000,10, 'black');//back
+	new_obj('cube side',0,0,500, 1000,1000,10, 'black');//front
+	new_obj('cube side',-500,0,0, 10,1000,1000, 'black');//left
+	new_obj('cube side',500,0,0, 10,1000,1000, 'black');//right
+	new_obj('cube side',0,500,0, 1000,10,1000, 'black');//top
+	new_obj('cube side',0,-500,0, 1000,10,1000, 'black');//bottom
 	switch (level) { // greater z means closer
 		case 1:
 			new_obj('ball', 0,0,0, 20,20,20);
@@ -106,7 +106,7 @@ function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objco
 }
 function overlap1d(x1, width1, x2, width2) {
 	return (
-		(x1 <= x2 && x2 <= x1 + width1/2)|| // !!!!!
+		(x1 <= x2 && x2 - width2/2 <= x1 + width1/2)|| // !!!!!
 		(x2 <= x1 && x1 - width1/2 <= x2 + width2/2)); // !!!!!
 }
 function overlap(object1, object2) {
@@ -116,7 +116,7 @@ function overlap(object1, object2) {
 	return (xol && yol && zol);
 }
 function fall() {
-	//speed += 0.2;
+	speed += 0.2;
 	for (i = 0; i < objects.length; i++) {
 		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
 			objects[i].y -= speed;
