@@ -43,7 +43,7 @@ function draw_cube() {
 	objects.forEach(function(e) {
 		if (e.type == 'ball') {
 			$('#world').append(
-			'<img src="ball.png" style="top:'+(530-e.y)+'; left:'+(510+e.x)+
+			'<img src="ball.png" style="top:'+(510-e.y)+'; left:'+(510+e.x)+
 			';z-index:'+(e.z+10)+'"/>');
 		} else if (e.type == 'exit') {
 			$('#world').append('<div style="background-color:black;top:'+
@@ -106,8 +106,8 @@ function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objco
 }
 function overlap1d(x1, width1, x2, width2) {
 	return (
-		(x1 <= x2 && x2 <= x1 + width1)||
-		(x2 <= x1 && x1 <= x2 + width2));
+		(x1 <= x2 && x2 <= x1 + width1/2)|| // !!!!!
+		(x2 <= x1 && x1 - width1/2 <= x2 + width2/2)); // !!!!!
 }
 function overlap(object1, object2) {
 	var xol = overlap1d(object1.x, object1.width, object2.x, object2.width),
@@ -119,7 +119,7 @@ function fall() {
 	//speed += 0.2;
 	for (i = 0; i < objects.length; i++) {
 		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
-			objects[i].y = objects[i].y - speed;
+			objects[i].y -= speed;
 			for (j = 0; j < objects.length; j++) {
 				if (overlap(objects[i], objects[j]) && i != j) {
 					console.log('overlap');
