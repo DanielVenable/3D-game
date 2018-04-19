@@ -123,12 +123,15 @@ function overlap(object1, object2) {
 }
 function fall() {
 	speed += 0.2;
+	var not_falling_number = 0;
+	var total_number = 0;
 	for (i = 0; i < objects.length; i++) {
 		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
 			objects[i].y -= speed;
+			total_number++;
 			for (j = 0; j < objects.length; j++) {
 				if (overlap(objects[i], objects[j]) && i != j) {
-					is_falling = false;
+					not_falling_number++;
 					while (overlap(objects[i], objects[j])) {
 						objects[i].y += 0.2;
 					}
@@ -138,13 +141,12 @@ function fall() {
 						next_level();
 					}
 					break;
-				} else {
-					is_falling = true;
 				}
 			}
 			draw_cube();
 		}
 	}
+	is_falling = (not_falling_number != total_number);
 	setTimeout(fall, 0); //keep falling
 }
 $(document).keydown(function(e) {
