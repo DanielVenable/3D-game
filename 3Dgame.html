@@ -16,6 +16,7 @@ h1 {
 </style></head><body>
 <span id="world"></span></body><script>
 var objects = [],
+	is_falling = false,
 	speed = 0.2,
 	level = 0;
 next_level();
@@ -34,7 +35,7 @@ function next_level() {
 		case 1:
 			new_obj('ball', 0,0,0, 20,20,20);
 			new_obj('wall', 0,-100,0, 500,10,1000, 'black');
-			new_obj('exit', 500,-200,0, 50,50,50, 'black');
+			new_obj('exit', 400,-200,0, 100,100,100);
 		break;
 	}
 	draw_cube();
@@ -47,9 +48,9 @@ function draw_cube() {
 			'<img src="ball.png" style="top:'+(510-e.y)+'; left:'+(510+e.x)+
 			';z-index:'+(e.z+10)+'"/>');
 		} else if (e.type == 'exit') {
-			$('#world').append('<div style="background-color:black;top:'+
-			(470-e.y)+';left:'+(470+e.x)+';width:'+e.width+
-			';height:'+e.height+';z-index:'+(e.z+50)+'"><h1 align="center">EXIT</h1></div>');
+			$('#world').append('<div style="background-color:black;top:'+(470-e.y)+
+			';left:'+(470+e.x)+';width:100;height:100;z-index:'+(e.z+50)+
+			'"><h1 align="center">EXIT</h1></div>');
 		} else if (e.type != 'cube side' || e.depth == 1000/*not show front or back*/) {
    			$('#world').append('<div style="background-color:'+e.color+';top:'+
 			(520-e.y-e.height/2)+';left:'+(520+e.x-e.width/2)+';width:'+e.width+
@@ -80,26 +81,30 @@ function view_left() {
 	draw_cube();
 }
 function tilt_clockwise() {
-	objects.forEach(function(e) {
-		e.New_y = -e.x;
-		e.x = e.y;
-		e.y = e.New_y;
-		e.New_height = e.width;
-		e.width = e.height;
-		e.height = e.New_height;
-	});
-	draw_cube();
+	if (!is_falling) {
+		objects.forEach(function(e) {
+			e.New_y = -e.x;
+			e.x = e.y;
+			e.y = e.New_y;
+			e.New_height = e.width;
+			e.width = e.height;
+			e.height = e.New_height;
+		});
+		draw_cube();
+	}
 }
 function tilt_counter_clockwise() {
-	objects.forEach(function(e) {
-		e.New_y = e.x;
-		e.x = -e.y;
-		e.y = e.New_y;
-		e.New_height = e.width;
-		e.width = e.height;
-		e.height = e.New_height;
-	});
-	draw_cube();
+	if (!is_falling) {
+		objects.forEach(function(e) {
+			e.New_y = e.x;
+			e.x = -e.y;
+			e.y = e.New_y;
+			e.New_height = e.width;
+			e.width = e.height;
+			e.height = e.New_height;
+		});
+		draw_cube();
+	}
 }
 function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
 	objects.push({  x:objx, y:objy, z:objz,width:objwidth, height:objheight,
@@ -123,15 +128,18 @@ function fall() {
 			objects[i].y -= speed;
 			for (j = 0; j < objects.length; j++) {
 				if (overlap(objects[i], objects[j]) && i != j) {
-					console.log('overlap');
+					is_falling = false;
 					while (overlap(objects[i], objects[j])) {
 						objects[i].y += 0.2;
 					}
 					speed = 0.2;
-					if ((objects[j].type == 'exit' && objects[i].type == 'ball') || (objects[i].type == 'exit' && objects[j].type == 'ball')) {
+					if ((objects[j].type == 'exit' && objects[i].type == 'ball') || 
+						(objects[i].type == 'exit' && objects[j].type == 'ball')) {
 						next_level();
 					}
 					break;
+				} else {
+					is_falling = true;
 				}
 			}
 			draw_cube();
