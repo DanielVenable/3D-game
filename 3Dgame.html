@@ -33,9 +33,27 @@ function next_level() {
 	new_obj('cube side',0,-500,0, 1000,10,1000, 'black');//bottom
 	switch (level) { // greater z means closer
 		case 1:
-			new_obj('ball', 0,0,0, 20,20,20);
-			new_obj('wall', 0,-100,0, 500,10,1000, 'black');
-			new_obj('exit', 400,-200,0, 100,100,100);
+			new_obj('ball', -450,450,0, 20,20,20);
+			new_obj('exit', 450,450,0, 100,100,100);
+		break;
+		case 2:
+			new_obj('ball', -50,350,0, 20,20,20);
+			new_obj('exit', 50,50,0, 100,100,100);
+			new_obj('wall', 0,-200,0, 10,600,200, 'rgb(100,100,100)');
+		break;
+		case 3:
+			new_obj('ball', -50,450,0, 20,20,20);
+			new_obj('exit', -60,-450,0, 100,100,100);
+			new_obj('wall', -50,0,0, 900,10,0, 'rgb(200,200,200)');
+			new_obj('wall', 0,-350,0, 10,300,0, 'rgb(100,100,100)');
+		break;
+		case 4:
+			new_obj('ball', 350,50,0, 20,20,20);
+			new_obj('exit', -150,-250,0, 100,100,100);
+			new_obj('wall', -250,0,0, 500,10,0, 'rgb(200,200,200)');
+			new_obj('wall', 300,0,0, 400,10,0, 'rgb(200,200,200)');
+			new_obj('wall', 100,450,0, 10,100,0, 'rgb(100,100,100)');
+			new_obj('wall', -200,-450,0, 10,100,0, 'rgb(100,100,100)');
 		break;
 	}
 	draw_cube();
@@ -136,8 +154,7 @@ function fall() {
 						objects[i].y += 0.2;
 					}
 					speed = 0.2;
-					if ((objects[j].type == 'exit' && objects[i].type == 'ball') || 
-						(objects[i].type == 'exit' && objects[j].type == 'ball')) {
+					if (objects[j].type == 'exit' && objects[i].type == 'ball') {
 						next_level();
 					}
 					break;
