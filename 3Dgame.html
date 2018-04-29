@@ -17,7 +17,6 @@ h1 {
 <span id="world"></span></body><script>
 var objects = [],
 	is_falling = false,
-	speed = 0.2,
 	level = 0;
 next_level();
 fall();
@@ -55,6 +54,20 @@ function next_level() {
 			new_obj('wall', 100,450,0, 10,100,0, 'rgb(100,100,100)');
 			new_obj('wall', -200,-450,0, 10,100,0, 'rgb(100,100,100)');
 		break;
+		case 5:
+			new_obj('ball', -350,150,0, 20,20,20);
+			new_obj('exit', 350,150,0, 100,100,100);
+			new_obj('wall', 0,300,0, 1000,10,0, 'rgb(200,200,200)');
+			new_obj('wall', 0,-300,0, 1000,10,0, 'rgb(200,200,200)');
+			new_obj('wall', 50,0,0, 10,300,0, 'rgb(100,100,100)');
+			new_obj('wall', -50,0,0, 10,400,0, 'rgb(150,150,150)');
+			new_obj('movable', 0,0,0, 88,200,0, 'rgb(50,50,255)');
+		break;
+	}
+	for (i = 0; i < objects.length; i++) {
+		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
+			objects[i].speed = 0.2;
+		}
 	}
 	draw_cube();
 }
@@ -140,12 +153,12 @@ function overlap(object1, object2) {
 	return (xol && yol && zol);
 }
 function fall() {
-	speed += 0.2;
 	var not_falling_number = 0;
 	var total_number = 0;
 	for (i = 0; i < objects.length; i++) {
 		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
-			objects[i].y -= speed;
+			objects[i].speed += 0.2;
+			objects[i].y -= objects[i].speed;
 			total_number++;
 			for (j = 0; j < objects.length; j++) {
 				if (overlap(objects[i], objects[j]) && i != j) {
@@ -153,7 +166,7 @@ function fall() {
 					while (overlap(objects[i], objects[j])) {
 						objects[i].y += 0.2;
 					}
-					speed = 0.2;
+					objects[i].speed = 0.2;
 					if (objects[j].type == 'exit' && objects[i].type == 'ball') {
 						next_level();
 					}
