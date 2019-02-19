@@ -10,15 +10,16 @@ img {
 	width: 20px;
 	height: 20px;
 }
-h1 {
-	color: green;
+canvas {
+	border: 10px solid #000000;
 }
 </style></head><body>
-<canvas id="world"><h2 align="center">Your browser does not support the canvas element.
-Please use another browser</h2></canvas></body><script>
+<canvas id="world" height="1000", width="1000">Your browser does not support the canvas element.
+Please use another browser</canvas></body><script>
 var objects = [],
 	is_falling = false,
-	ctx = $("canvas")[0].getContext("webgl");
+	canvas = $("canvas")[0].getContext("2d"),
+	eyes = {x:0, y:0, z:1000},
 	level = 0;
 next_level();
 fall();
@@ -74,8 +75,20 @@ function next_level() {
 	draw_cube();
 }
 function draw_cube() {
-	
+	canvas.clearRect(0,0,1000,1000);
+	for (x = 0; x < 1000; x++) {
+		for (y = 0; y < 1000; y++) {
+			if (is_pixel_active(x,y)) {
+				canvas.fillRect(x,y,1,1)
+			}
+		}
+	}
 }
+
+function is_pixel_active() {
+
+}
+
 function view_right() { 
 	objects.forEach(function(e) {
 		e.New_z = -e.x;
@@ -125,7 +138,7 @@ function tilt_counter_clockwise() {
 	}
 }
 function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
-	objects.push({  x:objx, y:objy, z:objz,width:objwidth, height:objheight,
+	objects.push({  x:objx, y:objy, z:objz, width:objwidth, height:objheight,
 					depth:objdepth, type:objtype, color:objcolor});
 }
 function overlap1d(x1, width1, x2, width2) {
