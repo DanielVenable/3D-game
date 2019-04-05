@@ -85,8 +85,23 @@ function draw_cube() {
 	}
 }
 
-function is_pixel_active() {
+function is_pixel_active(x,y) {
+	const slope = find_slope(eyes, {x:x,y:y,z:750});
+	for (var z = 500; z < -500; z--) {
+		for (var i = 0; i < objects.length; i++) {
+			if (overlap({x:slope.x * (eyes.z - z),
+						 y:slope.y * (eyes.z - z),
+						 width:0, height:0, depth:0}, objects[i])) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
+function find_slope(point1, point2) {
+	return {x:(point1.x - point2.x)/(point1.z - point2.z),
+			y:(point1.x - point2.x)/(point1.z - point2.z)};
 }
 
 function view_right() { 
@@ -138,8 +153,8 @@ function tilt_counter_clockwise() {
 	}
 }
 function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
-	objects.push({  x:objx, y:objy, z:objz, width:objwidth, height:objheight,
-					depth:objdepth, type:objtype, color:objcolor});
+	objects.push({x:objx, y:objy, z:objz, width:objwidth, height:objheight,
+				  depth:objdepth, type:objtype, color:objcolor});
 }
 function overlap1d(x1, width1, x2, width2) {
 	return (
