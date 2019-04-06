@@ -11,18 +11,17 @@ img {
 	height: 20px;
 }
 canvas {
-	border: 10px solid #000000;
+	border: 5px solid #000000;
 }
-</style></head><body>
-<canvas id="world" height="1000", width="1000">Your browser does not support the canvas element.
-Please use another browser</canvas></body><script>
+</style></head><body><canvas height="1000", width="1000">
+Your browser does not support the canvas element. Please use another browser</canvas></body><script>
 var objects = [],
 	is_falling = false,
 	canvas = $("canvas")[0].getContext("2d"),
 	eyes = {x:0, y:0, z:1000},
 	level = 0;
-next_level();
-fall();
+//next_level();
+//fall();
 function next_level() {
 	level++;
 	objects = [];
@@ -74,34 +73,43 @@ function next_level() {
 	}
 	draw_cube();
 }
+
 function draw_cube() {
 	canvas.clearRect(0,0,1000,1000);
-	for (x = 0; x < 1000; x++) {
-		for (y = 0; y < 1000; y++) {
-			if (is_pixel_active(x,y)) {
-				canvas.fillRect(x,y,1,1)
-			}
+	for (var i = 0; i < objects.length; i++) {
+		const obj = objects[i],
+		slopes = [
+			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y + obj.height/2, z:obj.z + obj.depth/2}),
+			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y + obj.height/2, z:obj.z - obj.depth/2}),
+			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y - obj.height/2, z:obj.z + obj.depth/2}),
+			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y - obj.height/2, z:obj.z - obj.depth/2}),
+			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y + obj.height/2, z:obj.z + obj.depth/2}),
+			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y + obj.height/2, z:obj.z - obj.depth/2}),
+			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y - obj.height/2, z:obj.z + obj.depth/2}),
+			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y - obj.height/2, z:obj.z - obj.depth/2})];
+		var points = [];
+		for (var j = 0; j < 8; j++) {
+			points.push(slopes[j].x * (eyes.z - 750));
+			points.push(slopes[j].y * (eyes.z - 750));
 		}
+		polygon(points);
 	}
-}
-
-function is_pixel_active(x,y) {
-	const slope = find_slope(eyes, {x:x,y:y,z:750});
-	for (var z = 500; z < -500; z--) {
-		for (var i = 0; i < objects.length; i++) {
-			if (overlap({x:slope.x * (eyes.z - z),
-						 y:slope.y * (eyes.z - z),
-						 width:0, height:0, depth:0}, objects[i])) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 function find_slope(point1, point2) {
-	return {x:(point1.x - point2.x)/(point1.z - point2.z),
-			y:(point1.x - point2.x)/(point1.z - point2.z)};
+	return {x:(point2.x - point1.x)/(point1.z - point2.z),
+			y:(point2.x - point1.x)/(point1.z - point2.z)};
+}
+
+function polygon(points) {
+	canvas.fillStyle = "#000";
+	canvas.beginPath();
+	canvas.moveTo(points[0] + 500, points[1] + 500);
+	for (var i = 2; i < points.length - 1; i += 2) {
+		canvas.lineTo(points[i] + 500, points[i + 1] + 500);
+	}
+	canvas.closePath();
+	canvas.fill();
 }
 
 function view_right() { 
@@ -115,6 +123,7 @@ function view_right() {
 	});
 	draw_cube();
 }
+
 function view_left() { 
 	objects.forEach(function(e) {
 		e.New_z = e.x;
@@ -126,6 +135,7 @@ function view_left() {
 	});
 	draw_cube();
 }
+
 function tilt_clockwise() {
 	if (!is_falling) {
 		objects.forEach(function(e) {
@@ -139,6 +149,7 @@ function tilt_clockwise() {
 		draw_cube();
 	}
 }
+
 function tilt_counter_clockwise() {
 	if (!is_falling) {
 		objects.forEach(function(e) {
@@ -152,21 +163,29 @@ function tilt_counter_clockwise() {
 		draw_cube();
 	}
 }
-function new_obj(objtype, objx, objy, objz, objwidth, objheight, objdepth, objcolor) {
-	objects.push({x:objx, y:objy, z:objz, width:objwidth, height:objheight,
-				  depth:objdepth, type:objtype, color:objcolor});
+
+function new_obj(type, x, y, z, width, height, depth, color) {
+	objects.push({x:x,y:y,z:z + depth/2,width:width,height:height,depth:0,type:type,color:color});
+	objects.push({x:x,y:y,z:z - depth/2,width:width,height:height,depth:0,type:type,color:color});
+	objects.push({x:x + width/2,y:y,z:z,width:0,height:height,depth:depth,type:type,color:color});
+	objects.push({x:x - width/2,y:y,z:z,width:0,height:height,depth:depth,type:type,color:color});
+	objects.push({x:x,y:y + height/2,z:z,width:width,height:0,depth:depth,type:type,color:color});
+	objects.push({x:x,y:y - height/2,z:z,width:width,height:0,depth:depth,type:type,color:color});
 }
+
 function overlap1d(x1, width1, x2, width2) {
 	return (
 		(x1 <= x2 && x2 - width2/2 <= x1 + width1/2)||
 		(x2 <= x1 && x1 - width1/2 <= x2 + width2/2));
 }
+
 function overlap(object1, object2) {
 	var xol = overlap1d(object1.x, object1.width, object2.x, object2.width),
 		yol = overlap1d(object1.y, object1.height, object2.y, object2.height),
 		zol = overlap1d(object1.z, object1.depth, object2.z, object2.depth);
 	return (xol && yol && zol);
 }
+
 function fall() {
 	var not_falling_number = 0;
 	var total_number = 0;
@@ -194,6 +213,7 @@ function fall() {
 	is_falling = (not_falling_number != total_number);
 	setTimeout(fall, 0); //keep falling
 }
+
 $(document).keydown(function(e) {
 	switch(e.which) {
 		case 37: tilt_counter_clockwise(); break;
