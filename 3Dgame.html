@@ -1,4 +1,5 @@
-<html><head><title>3D game</title>
+<html>
+<head><title>3D game</title>
 <script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" 
 integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8=" 
 crossorigin="anonymous"></script><style>
@@ -10,46 +11,47 @@ img {
 	width: 20px;
 	height: 20px;
 }
-canvas {
-	border: 5px solid #000000;
-}
-</style></head><body><canvas height="1000", width="1000">
+</style></head><body>
+<img src="ball.png" id="ball" hidden="hidden"/><canvas align="center" height="1000", width="1000">
 Your browser does not support the canvas element. Please use another browser</canvas></body><script>
 var objects = [],
 	is_falling = false,
 	canvas = $("canvas")[0].getContext("2d"),
 	eyes = {x:0, y:0, z:1000},
 	level = 0;
-//next_level();
-//fall();
+canvas.fillStyle = "#000000";
+canvas.strokeStyle = "#00ff00";
+window.onload = function() {
+	next_level();
+	fall();
+}
 function next_level() {
 	level++;
 	objects = [];
-	$('#world').empty();
-	new_obj('cube side',0,0,-500, 1000,1000,10, 'black');//back
-	new_obj('cube side',0,0,500, 1000,1000,10, 'black');//front
-	new_obj('cube side',-500,0,0, 10,1000,1000, 'black');//left
-	new_obj('cube side',500,0,0, 10,1000,1000, 'black');//right
-	new_obj('cube side',0,500,0, 1000,10,1000, 'black');//top
-	new_obj('cube side',0,-500,0, 1000,10,1000, 'black');//bottom
+	objects.push({x:0, y:0, z:-500, width:1000, height:1000, depth:0, type: "cube_side"}); // back
+	objects.push({x:0, y:0, z:500, width:1000, height:1000, depth:0, type: "cube_side"}); // front
+	objects.push({x:-500, y:0, z:0, width:0, height:1000, depth:1000, type: "cube_side"}); // left
+	objects.push({x:500, y:0, z:0, width:0, height:1000, depth:1000, type: "cube_side"}); // right
+	objects.push({x:0, y:500, z:0, width:1000, height:0, depth:1000, type: "cube_side"}); // top
+	objects.push({x:0, y:-500, z:0, width:1000, height:0, depth:1000, type: "cube_side"}); // bottom
 	switch (level) { // greater z means closer
 		case 1:
-			new_obj('ball', -450,450,0, 20,20,20);
+			ball(-450,450,0);
 			new_obj('exit', 450,450,0, 100,100,100);
 		break;
 		case 2:
-			new_obj('ball', -50,350,0, 20,20,20);
+			ball(-50,350,0);
 			new_obj('exit', 50,50,0, 100,100,100);
 			new_obj('wall', 0,-200,0, 10,600,200, 'rgb(100,100,100)');
 		break;
 		case 3:
-			new_obj('ball', -50,450,0, 20,20,20);
+			ball(-50,450,0);
 			new_obj('exit', -60,-450,0, 100,100,100);
 			new_obj('wall', -50,0,0, 900,10,0, 'rgb(200,200,200)');
 			new_obj('wall', 0,-350,0, 10,300,0, 'rgb(100,100,100)');
 		break;
 		case 4:
-			new_obj('ball', 350,50,0, 20,20,20);
+			ball(350,50,0);
 			new_obj('exit', -150,-250,0, 100,100,100);
 			new_obj('wall', -250,0,0, 500,10,0, 'rgb(200,200,200)');
 			new_obj('wall', 300,0,0, 400,10,0, 'rgb(200,200,200)');
@@ -57,7 +59,7 @@ function next_level() {
 			new_obj('wall', -200,-450,0, 10,100,0, 'rgb(100,100,100)');
 		break;
 		case 5:
-			new_obj('ball', -350,150,0, 20,20,20);
+			ball(-350,150,0);
 			new_obj('exit', 350,150,0, 100,100,100);
 			new_obj('wall', 0,300,0, 1000,10,0, 'rgb(200,200,200)');
 			new_obj('wall', 0,-300,0, 1000,10,0, 'rgb(200,200,200)');
@@ -77,42 +79,66 @@ function next_level() {
 function draw_cube() {
 	canvas.clearRect(0,0,1000,1000);
 	for (var i = 0; i < objects.length; i++) {
-		const obj = objects[i],
-		slopes = [
-			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y + obj.height/2, z:obj.z + obj.depth/2}),
-			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y + obj.height/2, z:obj.z - obj.depth/2}),
-			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y - obj.height/2, z:obj.z + obj.depth/2}),
-			find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y - obj.height/2, z:obj.z - obj.depth/2}),
-			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y + obj.height/2, z:obj.z + obj.depth/2}),
-			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y + obj.height/2, z:obj.z - obj.depth/2}),
-			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y - obj.height/2, z:obj.z + obj.depth/2}),
-			find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y - obj.height/2, z:obj.z - obj.depth/2})];
-		var points = [];
-		for (var j = 0; j < 8; j++) {
-			points.push(slopes[j].x * (eyes.z - 750));
-			points.push(slopes[j].y * (eyes.z - 750));
+		const obj = objects[i];
+		if (obj.type == "ball") {
+			const slope1 = find_slope(eyes, {x:obj.x - 10, y:obj.y + 10, z:obj.z}),
+					pos1 = {x: slope1.x * (eyes.z - 750), y: slope1.y * (eyes.z - 750)},
+				  slope2 = find_slope(eyes, {x:obj.x + 10, y:obj.y - 10, z:obj.z}),
+					pos2 = {x: slope2.x * (eyes.z - 750), y: slope2.y * (eyes.z - 750)};
+			canvas.drawImage($("#ball")[0], pos1.x + 500, 500 - pos1.y,
+											pos2.x - pos1.x, pos2.y - pos1.y);
+		} else {
+			var slopes;
+			if (obj.depth == 0) {
+				slopes = [
+					find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y + obj.height/2, z:obj.z}),
+					find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y - obj.height/2, z:obj.z}),
+					find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y - obj.height/2, z:obj.z}),
+					find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y + obj.height/2, z:obj.z})];
+			} else if (obj.width == 0) {
+				slopes = [
+					find_slope(eyes, {x:obj.x, y:obj.y + obj.height/2, z:obj.z + obj.depth/2}),
+					find_slope(eyes, {x:obj.x, y:obj.y + obj.height/2, z:obj.z - obj.depth/2}),
+					find_slope(eyes, {x:obj.x, y:obj.y - obj.height/2, z:obj.z - obj.depth/2}),
+					find_slope(eyes, {x:obj.x, y:obj.y - obj.height/2, z:obj.z + obj.depth/2})];
+			} else if (obj.height == 0) {
+				slopes = [
+					find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y, z:obj.z + obj.depth/2}),
+					find_slope(eyes, {x:obj.x + obj.width/2, y:obj.y, z:obj.z - obj.depth/2}),
+					find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y, z:obj.z - obj.depth/2}),
+					find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y, z:obj.z + obj.depth/2})];
+			} else {
+				console.log("slopes actually wasn't defined");
+			}
+			var points = [];
+			for (var j = 0; j < 4; j++) {
+				points.push(slopes[j].x * (eyes.z - 750));
+				points.push(slopes[j].y * (eyes.z - 750));
+			}
+			polygon(points);
 		}
-		polygon(points);
 	}
 }
 
 function find_slope(point1, point2) {
 	return {x:(point2.x - point1.x)/(point1.z - point2.z),
-			y:(point2.x - point1.x)/(point1.z - point2.z)};
+			y:(point2.y - point1.y)/(point1.z - point2.z)};
 }
 
 function polygon(points) {
-	canvas.fillStyle = "#000";
 	canvas.beginPath();
-	canvas.moveTo(points[0] + 500, points[1] + 500);
+	canvas.moveTo(points[0] + 500, 500 - points[1]);
 	for (var i = 2; i < points.length - 1; i += 2) {
-		canvas.lineTo(points[i] + 500, points[i + 1] + 500);
+		canvas.lineTo(points[i] + 500, 500 - points[i + 1]);
+		canvas.stroke();
 	}
+	canvas.lineTo(points[0] + 500, 500 - points[1]);
+	canvas.stroke();
 	canvas.closePath();
 	canvas.fill();
 }
 
-function view_right() { 
+function view_right() {
 	objects.forEach(function(e) {
 		e.New_z = -e.x;
 		e.x = e.z;
@@ -124,7 +150,7 @@ function view_right() {
 	draw_cube();
 }
 
-function view_left() { 
+function view_left() {
 	objects.forEach(function(e) {
 		e.New_z = e.x;
 		e.x = -e.z;
@@ -173,6 +199,10 @@ function new_obj(type, x, y, z, width, height, depth, color) {
 	objects.push({x:x,y:y - height/2,z:z,width:width,height:0,depth:depth,type:type,color:color});
 }
 
+function ball(x, y, z) {
+	objects.push({type: "ball", width:20, height:20, depth:20, x:x, y:y, z:z})
+}
+
 function overlap1d(x1, width1, x2, width2) {
 	return (
 		(x1 <= x2 && x2 - width2/2 <= x1 + width1/2)||
@@ -195,9 +225,9 @@ function fall() {
 			objects[i].y -= objects[i].speed;
 			total_number++;
 			for (j = 0; j < objects.length; j++) {
-				if (overlap(objects[i], objects[j]) && i != j) {
+				if ((overlap(objects[i], objects[j]) && i != j) || objects[i].y <= -500) {
 					not_falling_number++;
-					while (overlap(objects[i], objects[j])) {
+					while (overlap(objects[i], objects[j]) || objects[i].y <= -500) {
 						objects[i].y += 0.2;
 					}
 					objects[i].speed = 0.2;
