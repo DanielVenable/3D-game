@@ -1,5 +1,4 @@
-<html>
-<head><title>3D game</title>
+<html><head><title>3D game</title>
 <script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" 
 integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8=" 
 crossorigin="anonymous"></script><style>
@@ -11,13 +10,14 @@ img {
 	width: 20px;
 	height: 20px;
 }
-</style></head><body>
+</style></head><body><button onclick="level--; next_level();">Restart level</button>
 <img src="ball.png" id="ball" hidden="hidden"/><canvas align="center" height="1000", width="1000">
 Your browser does not support the canvas element. Please use another browser</canvas></body><script>
 var objects = [],
 	is_falling = false,
 	canvas = $("canvas")[0].getContext("2d"),
 	eyes = {x:0, y:0, z:1000},
+	screen_z = 500;
 	level = 0;
 canvas.fillStyle = "#000000";
 canvas.strokeStyle = "#00ff00";
@@ -82,12 +82,12 @@ function draw_cube() {
 		const obj = objects[i];
 		if (obj.type == "ball") {
 			const slope1 = find_slope(eyes, {x:obj.x - 10, y:obj.y + 10, z:obj.z}),
-					pos1 = {x: slope1.x * (eyes.z - 750), y: slope1.y * (eyes.z - 750)},
+					pos1 = {x: slope1.x * (eyes.z - screen_z), y: slope1.y * (eyes.z - screen_z)},
 				  slope2 = find_slope(eyes, {x:obj.x + 10, y:obj.y - 10, z:obj.z}),
-					pos2 = {x: slope2.x * (eyes.z - 750), y: slope2.y * (eyes.z - 750)};
+					pos2 = {x: slope2.x * (eyes.z - screen_z), y: slope2.y * (eyes.z - screen_z)};
 			canvas.drawImage($("#ball")[0], pos1.x + 500, 500 - pos1.y,
 											pos2.x - pos1.x, pos2.y - pos1.y);
-		} else {
+		} else if (obj.type != "cube_side" || obj.z != 500) {
 			var slopes;
 			if (obj.depth == 0) {
 				slopes = [
@@ -108,12 +108,12 @@ function draw_cube() {
 					find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y, z:obj.z - obj.depth/2}),
 					find_slope(eyes, {x:obj.x - obj.width/2, y:obj.y, z:obj.z + obj.depth/2})];
 			} else {
-				console.log("slopes actually wasn't defined");
+				alert("slopes actually wasn't defined on level " + level);
 			}
 			var points = [];
 			for (var j = 0; j < 4; j++) {
-				points.push(slopes[j].x * (eyes.z - 750));
-				points.push(slopes[j].y * (eyes.z - 750));
+				points.push(slopes[j].x * (eyes.z - screen_z));
+				points.push(slopes[j].y * (eyes.z - screen_z));
 			}
 			polygon(points);
 		}
@@ -225,9 +225,9 @@ function fall() {
 			objects[i].y -= objects[i].speed;
 			total_number++;
 			for (j = 0; j < objects.length; j++) {
-				if ((overlap(objects[i], objects[j]) && i != j) || objects[i].y <= -500) {
+				if ((overlap(objects[i], objects[j]) && i != j)) {
 					not_falling_number++;
-					while (overlap(objects[i], objects[j]) || objects[i].y <= -500) {
+					while (overlap(objects[i], objects[j])) {
 						objects[i].y += 0.2;
 					}
 					objects[i].speed = 0.2;
