@@ -12,29 +12,33 @@ img {
 }
 canvas {
 	position: absolute;
-	top: 50px;
-	left: 50px;
+	top: 0px;
+	left: 0px;
+	border: 5px solid black;
 }
 </style></head><body><button onclick="level--; next_level();">Restart level</button>
 <img src="ball.png" id="ball" hidden="hidden"/>
-<canvas align="center" height="1000" width="1000" onmousemove="handle_mouse_over(event)">
+<canvas align="center" height="1000" width="1000" onmousemove="mouse_over(event);"
+onmousewheel="mouse_wheel(event);">
 Your browser does not support the canvas element. Please use another browser</canvas></body><script>
 var objects = [],
 	is_falling = false,
 	canvas = $("canvas")[0].getContext("2d"),
 	eyes = {x:0, y:0, z:1000},
-	screen_z = 500;
+	screen_z = 750;
 	level = 0;
-canvas.fillStyle = "#000000";
-canvas.strokeStyle = "#00ff00";
 window.onload = function() {
 	next_level();
 	fall();
 }
 
-function handle_mouse_over(event) {
-	eyes.x = 500 - event.clientX - parseFloat($("canvas").css("top"));
+function mouse_over(event) {
+	eyes.x = 500 - event.clientX + parseFloat($("canvas").css("top"));
 	eyes.y = - 500 + event.clientY - parseFloat($("canvas").css("left"));
+}
+
+function mouse_wheel(event) {
+	screen_z = Math.min(Math.max(event.deltaY + screen_z, -500), 966);
 }
 
 function next_level() {
@@ -92,6 +96,12 @@ function draw_cube() {
 	canvas.clearRect(0,0,1000,1000);
 	for (var i = 0; i < objects.length; i++) {
 		const obj = objects[i];
+		canvas.fillStyle = "#000000";
+		canvas.strokeStyle = "#000000";
+		if (obj.type == "cube_side") {
+			canvas.fillStyle = "#ff000000";
+			canvas.strokeStyle = "#000000";
+		}
 		if (obj.type == "ball") {
 			const slope1 = find_slope(eyes, {x:obj.x - 10, y:obj.y + 10, z:obj.z}),
 					pos1 = {x: slope1.x * (eyes.z - screen_z), y: slope1.y * (eyes.z - screen_z)},
@@ -99,7 +109,7 @@ function draw_cube() {
 					pos2 = {x: slope2.x * (eyes.z - screen_z), y: slope2.y * (eyes.z - screen_z)};
 			canvas.drawImage($("#ball")[0], pos1.x + 500, 500 - pos1.y,
 											pos2.x - pos1.x, pos2.y - pos1.y);
-		} else if (obj.type != "cube_side" || obj.z != 500) {
+		} else {
 			var slopes;
 			if (obj.depth == 0) {
 				slopes = [
