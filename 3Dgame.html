@@ -16,11 +16,24 @@ canvas {
 	left: 0px;
 	border: 5px solid black;
 }
+pre {
+	position: absolute;
+	left: 1024px;
+	top: 0px;
+}
 </style></head><body><button onclick="level--; next_level();">Restart level</button>
 <img src="ball.png" id="ball" hidden="hidden"/>
-<canvas align="center" height="1000" width="1000" onmousemove="mouse_over(event);"
-onmousewheel="mouse_wheel(event);">
-Your browser does not support the canvas element. Please use another browser</canvas></body><script>
+<canvas height="1000" width="1000" onmousemove="mouse_over(event);" onmousewheel="mouse_wheel(event);"
+		onmousedown="mouse_click(event);" oncontextmenu="return false;" onmouseleave="reselectable();">
+</canvas><pre><h3>How to play:
+    Rotate the cube to get the ball to the finish.
+    Controls:
+        Left click: Rotate counter clockwise.
+        Right click: Rotate clockwise.
+        A: Look at the left side.
+        D: Look at the right side.
+        Scroll wheel: Zoom in and out.
+Have fun!</h3></pre></body><script>
 var objects = [],
 	is_falling = false,
 	canvas = $("canvas")[0].getContext("2d"),
@@ -35,10 +48,51 @@ window.onload = function() {
 function mouse_over(event) {
 	eyes.x = 500 - event.clientX + parseFloat($("canvas").css("top"));
 	eyes.y = - 500 + event.clientY - parseFloat($("canvas").css("left"));
+	$('pre').css("user-select", "none");
+}
+
+function reselectable() {
+	$('pre').css("user-select", "auto");
 }
 
 function mouse_wheel(event) {
 	screen_z = Math.min(Math.max(event.deltaY + screen_z, -500), 966);
+}
+
+function mouse_click(event) {
+	if (event.which == 1) { // left click
+		tilt_counter_clockwise();
+	} else if (event.which == 3) { // right click
+		tilt_clockwise();
+	}
+}
+
+function tilt_clockwise() {
+	if (!is_falling) {
+		objects.forEach(function(e) {
+			e.New_y = -e.x;
+			e.x = e.y;
+			e.y = e.New_y;
+			e.New_height = e.width;
+			e.width = e.height;
+			e.height = e.New_height;
+		});
+		draw_cube();
+	}
+}
+
+function tilt_counter_clockwise() {
+	if (!is_falling) {
+		objects.forEach(function(e) {
+			e.New_y = e.x;
+			e.x = -e.y;
+			e.y = e.New_y;
+			e.New_height = e.width;
+			e.width = e.height;
+			e.height = e.New_height;
+		});
+		draw_cube();
+	}
 }
 
 function next_level() {
@@ -182,34 +236,6 @@ function view_left() {
 		e.depth = e.New_depth;
 	});
 	draw_cube();
-}
-
-function tilt_clockwise() {
-	if (!is_falling) {
-		objects.forEach(function(e) {
-			e.New_y = -e.x;
-			e.x = e.y;
-			e.y = e.New_y;
-			e.New_height = e.width;
-			e.width = e.height;
-			e.height = e.New_height;
-		});
-		draw_cube();
-	}
-}
-
-function tilt_counter_clockwise() {
-	if (!is_falling) {
-		objects.forEach(function(e) {
-			e.New_y = e.x;
-			e.x = -e.y;
-			e.y = e.New_y;
-			e.New_height = e.width;
-			e.width = e.height;
-			e.height = e.New_height;
-		});
-		draw_cube();
-	}
 }
 
 function new_obj(type, x, y, z, width, height, depth, color) {
