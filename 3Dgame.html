@@ -23,6 +23,7 @@ pre {
 	user-select: none;
 }
 </style></head><body><button onclick="level--; next_level();">Restart level</button>
+<button onclick="level = 0; next_level();">Restart game</button>
 <img src="ball.png" id="ball" hidden="hidden"/>
 <canvas height="1000" width="1000" onmousemove="mouse_move(event);" onmousewheel="mouse_wheel(event);"
 		onmousedown="mouse_click(event);" oncontextmenu="return false;">
@@ -39,13 +40,13 @@ var objects = [],
 	is_falling = false,
 	canvas = $("canvas")[0].getContext("2d"),
 	eyes = {x:0, y:0, z:1000},
-	highest_part_of_movable = 0;
-	screen_z = 750;
+	screen_z = 750,
 	level = 0;
-window.onload = function() {
+window.onload = (function () {
+	level = 0;
 	next_level();
 	fall();
-}
+});
 
 function mouse_move(event) {
 	eyes.x = 500 - event.clientX + parseFloat($("canvas").css("top"));
