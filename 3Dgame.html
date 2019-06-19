@@ -161,11 +161,11 @@ function draw_cube() {
 			canvas.fillStyle = "#ff000060";
 		}
 		if (obj.type == "ball") {
-			const slope1 = find_slope(eyes, {x:obj.x - 10, y:obj.y + 10, z:obj.z}),
+			const slope1 = find_slope(eyes, {x: obj.x - obj.width/2, y: obj.y - obj.width/2, z: obj.z}),
 					pos1 = {x: slope1.x * (eyes.z - screen_z), y: slope1.y * (eyes.z - screen_z)},
-				  slope2 = find_slope(eyes, {x:obj.x + 10, y:obj.y - 10, z:obj.z}),
+				  slope2 = find_slope(eyes, {x: obj.x + obj.width/2, y: obj.y + obj.width/2, z: obj.z}),
 					pos2 = {x: slope2.x * (eyes.z - screen_z), y: slope2.y * (eyes.z - screen_z)};
-			canvas.drawImage(ball_image, pos1.x + 500, 500 - pos1.y, pos2.x - pos1.x, pos2.y - pos1.y);
+			canvas.drawImage(ball_image, pos1.x + 500, 500 - pos1.y, pos2.x - pos1.x, pos1.y - pos2.y);
 		} else {
 			var slopes;
 			if (obj.depth == 0) {
