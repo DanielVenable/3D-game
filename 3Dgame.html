@@ -2,9 +2,6 @@
 <script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" 
 integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8=" 
 crossorigin="anonymous"></script><style>
-button {
-	user-select: none;
-}
 img {
 	position: absolute;
 	width: 20px;
@@ -20,20 +17,22 @@ pre {
 	position: absolute;
 	left: 1050px;
 	top: 0px;
+}
+body {
 	user-select: none;
 }
 </style></head><body><button onclick="level--; next_level();">Restart level</button>
 <button onclick="level = 0; next_level();">Restart game</button>
 <canvas height="1000" width="1000" onmousemove="mouse_move(event);" onmousewheel="mouse_wheel(event);"
-		onmousedown="mouse_click(event);" oncontextmenu="return false;">
+	onmousedown="mouse_click(event);" oncontextmenu="return false;">
 </canvas><pre><h3>How to play:
     Rotate the cube to get the ball to the finish.
-    Controls:
-        Left click/left arrow key: Rotate counter clockwise.
-        Right click/right arrow key: Rotate clockwise.
-        A: Look at the left side.
-        D: Look at the right side.
-        Scroll wheel: Zoom in and out.
+        Controls:
+            Left click/left arrow key: Rotate counter clockwise.
+            Right click/right arrow key: Rotate clockwise.
+            A: Look at the left side.
+            D: Look at the right side.
+            Scroll wheel: Zoom in and out.
 Have fun!</h3></pre></body><script>
 var objects = [],
 	ball_image = new Image(),
@@ -57,7 +56,7 @@ function mouse_move(event) {
 
 function mouse_wheel(event) {
 	screen_z = Math.min(Math.max(event.deltaY + screen_z, -500), 966);
-	draw_cube()
+	draw_cube();
 }
 
 function mouse_click(event) {
@@ -139,6 +138,16 @@ function next_level() {
 			new_obj('wall', 0,-490,490, 10,10,10);
 			new_obj('wall', 0,0,-225, 50,50,525);
 		break;
+		case 7:
+			ball(0,-500,0);
+			new_obj("wall", -250,-100,0, 500,10,200);
+			new_obj("wall", -100,0,0, 10,200,200);
+			new_obj("wall", 100,200,0, 10,600,200);
+			new_obj("wall", 0,0,100, 200,200,10);
+			new_obj("wall", 0,0,-100, 200,200,10);
+			new_obj("wall", 110,-100,0, 20,20,20);
+			new_obj("exit", 100,450,250, 100,100,100);
+		break;
 	}
 	for (i = 0; i < objects.length; i++) {
 		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
@@ -163,7 +172,7 @@ function draw_cube() {
 		if (obj.type == "ball") {
 			const slope1 = find_slope(eyes, {x: obj.x - obj.width/2, y: obj.y - obj.width/2, z: obj.z}),
 					pos1 = {x: slope1.x * (eyes.z - screen_z), y: slope1.y * (eyes.z - screen_z)},
-				  slope2 = find_slope(eyes, {x: obj.x + obj.width/2, y: obj.y + obj.width/2, z: obj.z}),
+					slope2 = find_slope(eyes, {x: obj.x + obj.width/2, y: obj.y + obj.width/2, z: obj.z}),
 					pos2 = {x: slope2.x * (eyes.z - screen_z), y: slope2.y * (eyes.z - screen_z)};
 			canvas.drawImage(ball_image, pos1.x + 500, 500 - pos1.y, pos2.x - pos1.x, pos1.y - pos2.y);
 		} else {
