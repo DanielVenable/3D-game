@@ -1,1 +1,27 @@
-<html><head><title>3D game level maker</title></head><body></body></html>
+<html><head><title>3D game level maker</title>
+<script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" 
+    integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8=" 
+    crossorigin="anonymous"></script>
+<script src="Game player.js"></script><style>
+input {
+    width: 50;
+}
+</style></head><body>
+<div id="blocks"></div>
+<button onclick="add_block();">+</button>
+<canvas height="1000" width="1000" onmousemove="mouse_move(event);" onmousewheel="mouse_wheel(event);"
+	onmousedown="mouse_click(event);" oncontextmenu="return false;">
+</canvas><script>
+var canvas = $("canvas")[0].getContext("2d");
+function next_level() {}
+function add_block() {
+    $("#blocks").append(`<div class="block"><h2>
+        x: <input type="number" size="3"/>
+        y: <input type="number" size="3"/>
+        z: <input type="number" size="3"/>
+        height: <input type="number" size="3"/>
+        width: <input type="number" size="3"/>
+        depth: <input type="number" size="3"/>
+        </h2></div>`);
+}
+</script></body></html>
