@@ -10,7 +10,11 @@ canvas {
     border: 5px solid black;
 }
 </style></head><body>
-<div id="blocks"></div>
+<div id="blocks"><div class="ball"><h3>Ball: 
+    x: <input type="number" size="3"/>
+    y: <input type="number" size="3"/>
+    z: <input type="number" size="3"/>
+    </h3></div></div>
 <button onclick="add_block();">+</button>
 <canvas height="1000" width="1000" onmousemove="mouse_move(event);" onmousewheel="mouse_wheel(event);"
 	onmousedown="mouse_click(event);" oncontextmenu="return false;">
