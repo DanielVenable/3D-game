@@ -20,7 +20,36 @@ canvas {
 	onmousedown="mouse_click(event);" oncontextmenu="return false;">
 </canvas><script>
 var canvas = $("canvas")[0].getContext("2d");
-function next_level() {}
+function next_level() {
+    objects = [];
+	objects.push({x:0, y:0, z:-500, width:1000, height:1000, depth:0, type: "cube_side"}); // back
+	objects.push({x:0, y:0, z:500, width:1000, height:1000, depth:0, type: "cube_side"}); // front
+	objects.push({x:-500, y:0, z:0, width:0, height:1000, depth:1000, type: "cube_side"}); // left
+	objects.push({x:500, y:0, z:0, width:0, height:1000, depth:1000, type: "cube_side"}); // right
+	objects.push({x:0, y:500, z:0, width:1000, height:0, depth:1000, type: "cube_side"}); // top
+	objects.push({x:0, y:-500, z:0, width:1000, height:0, depth:1000, type: "cube_side"}); // bottom
+	var values = {x:[],y:[],z:[],height:[],width:[],depth:[]};
+	$("input").each(function() {
+		switch ($(this).attr("class")) {
+			case "x": values.x.push(this.value); break;
+			case "y": values.y.push(this.value); break;
+			case "z": values.z.push(this.value); break;
+			case "height": values.height.push(this.value); break;
+			case "width": values.width.push(this.value); break;
+			case "depth": values.depth.push(this.value); break;
+		}
+	});
+	for (var i = 0; i < values.x.length; i++) {
+		new_obj("wall", values.x[i], values.y[i], values.z[i],
+			values.height[i], values.width[i], values.depth[i]);
+	}
+	for (var i = 0; i < objects.length; i++) {
+		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
+			objects[i].speed = 0.2;
+		}
+	}
+	draw_cube();
+}
 function add_block() {
     $("#blocks").append(`<div class="block"><h3>
         x: <input type="number" size="3"/>
