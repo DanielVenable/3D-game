@@ -6,20 +6,31 @@
 input {
     width: 50;
 }
+#blocks {
+	position: absolute;
+	top: 30px;
+	left: 1050px;
+}
 canvas {
+	position: absolute;
+	top: 30px;
+	left: 30px;
     border: 5px solid black;
 }
 </style></head><body>
-<div id="blocks"><div class="ball"><h3>Ball: 
-    x: <input type="number" size="3"/>
-    y: <input type="number" size="3"/>
-    z: <input type="number" size="3"/>
-    </h3></div></div>
-<button onclick="add_block();">+</button>
+<div id="blocks"><h3>Ball: 
+    x: <input type="number" size="3" onchange="next_level();" class="x"/>
+    y: <input type="number" size="3" onchange="next_level();" class="y"/>
+    z: <input type="number" size="3" onchange="next_level();" class="z"/>
+    </h3></div>
+<div><button onclick="add_block();">+</button></div>
 <canvas height="1000" width="1000" onmousemove="mouse_move(event);" onmousewheel="mouse_wheel(event);"
-	onmousedown="mouse_click(event);" oncontextmenu="return false;">
-</canvas><script>
+	onmousedown="mouse_click(event);" oncontextmenu="return false;"></canvas><script>
 var canvas = $("canvas")[0].getContext("2d");
+window.onload = function () {
+	next_level();
+	fall();
+};
 function next_level() {
     objects = [];
 	objects.push({x:0, y:0, z:-500, width:1000, height:1000, depth:0, type: "cube_side"}); // back
@@ -37,11 +48,13 @@ function next_level() {
 			case "height": values.height.push(this.value); break;
 			case "width": values.width.push(this.value); break;
 			case "depth": values.depth.push(this.value); break;
+			default: console.log(this);
 		}
 	});
+	ball(values.x[0], values.y[0], values.z[0]);
 	for (var i = 0; i < values.x.length; i++) {
 		new_obj("wall", values.x[i], values.y[i], values.z[i],
-			values.height[i], values.width[i], values.depth[i]);
+			values.height[i + 1], values.width[i + 1], values.depth[i + 1]);
 	}
 	for (var i = 0; i < objects.length; i++) {
 		if (objects[i].type == 'ball' || objects[i].type == 'movable') {
@@ -50,14 +63,12 @@ function next_level() {
 	}
 	draw_cube();
 }
+
 function add_block() {
+	const block_input = value => `${value}: <input type="number" size="3" onchange="next_level();" class=${value}/>`
     $("#blocks").append(`<div class="block"><h3>
-        x: <input type="number" size="3"/>
-        y: <input type="number" size="3"/>
-        z: <input type="number" size="3"/>
-        height: <input type="number" size="3"/>
-        width: <input type="number" size="3"/>
-        depth: <input type="number" size="3"/>
+		${block_input("x") + block_input("y") + block_input("z")}
+		${block_input("height") + block_input("width") + block_input("depth")}
         </h3></div>`);
 }
 </script></body></html>
