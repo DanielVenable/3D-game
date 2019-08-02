@@ -22,12 +22,13 @@ canvas {
     x: <input type="number" size="3" onchange="next_level();" class="x"/>
     y: <input type="number" size="3" onchange="next_level();" class="y"/>
     z: <input type="number" size="3" onchange="next_level();" class="z"/>
-    </h3></div>
+</h3></div>
 <div><button onclick="add_block();">+</button>
 	 <button onclick="next_level();">Restart level</button></div>
 <canvas height="1000" width="1000" onmousemove="mouse_move(event);" onmousewheel="mouse_wheel(event);"
 	onmousedown="mouse_click(event);" oncontextmenu="return false;"></canvas><script>
 var canvas = $("canvas")[0].getContext("2d");
+add_block("Exit: ");
 window.onload = function () {
 	next_level();
 	fall();
@@ -54,7 +55,8 @@ function next_level() {
 		}
 	});
 	ball(values.x[0], values.y[0], values.z[0]);
-	for (var i = 0; i < values.height.length; i++) {
+	new_obj("exit", values.x[1], values.y[1], values.z[1], values.width[0], values.height[0], values.depth[0]);
+	for (var i = 1; i < values.height.length; i++) {
 		new_obj("wall", values.x[i + 1], values.y[i + 1], values.z[i + 1],
 			values.width[i], values.height[i], values.depth[i]);
 	}
@@ -66,11 +68,12 @@ function next_level() {
 	draw_cube();
 }
 
-function add_block() {
+function add_block(text) {
+	if (!text) text = "";
 	const block_input = value => `${value}: <input type="number" size="3" onchange="next_level();" class=${value}>`
-    $("#blocks").append(`<div class="block"><h3>
+    $("#blocks").append(`<h3>${text}
 		${block_input("x") + block_input("y") + block_input("z")}
 		${block_input("width") + block_input("height") + block_input("depth")}
-        </h3></div>`);
+        </h3>`);
 }
 </script></body></html>
