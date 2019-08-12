@@ -3,7 +3,7 @@ var objects = [],
 	is_falling = false,
 	eyes = {x:0, y:0, z:1000},
 	screen_z = 750,
-	level = 0
+	level = 0;
 ball_image.src = "ball.png";
 
 function mouse_move(event) {
@@ -60,16 +60,18 @@ function draw_cube() {
 		const obj = objects[i];
 		canvas.fillStyle = "#00000060";
 		canvas.strokeStyle = "#000000";
-		if (obj.type == "cube_side") {
+		if (obj.selected) {
+			canvas.fillStyle = "#ffff0060"
+		} else if (obj.type == "cube_side") {
 			canvas.fillStyle = "#00000000";
 		} else if (obj.type == "exit") {
 			canvas.fillStyle = "#ff000060";
 		}
 		if (obj.type == "ball") {
 			const slope1 = find_slope(eyes, {x: obj.x - obj.width/2, y: obj.y - obj.width/2, z: obj.z}),
-					pos1 = {x: slope1.x * (eyes.z - screen_z), y: slope1.y * (eyes.z - screen_z)},
-					slope2 = find_slope(eyes, {x: obj.x + obj.width/2, y: obj.y + obj.width/2, z: obj.z}),
-					pos2 = {x: slope2.x * (eyes.z - screen_z), y: slope2.y * (eyes.z - screen_z)};
+				pos1 = {x: slope1.x * (eyes.z - screen_z), y: slope1.y * (eyes.z - screen_z)},
+				slope2 = find_slope(eyes, {x: obj.x + obj.width/2, y: obj.y + obj.width/2, z: obj.z}),
+				pos2 = {x: slope2.x * (eyes.z - screen_z), y: slope2.y * (eyes.z - screen_z)};
 			canvas.drawImage(ball_image, pos1.x + 500, 500 - pos1.y, pos2.x - pos1.x, pos1.y - pos2.y);
 		} else {
 			var slopes;
@@ -167,13 +169,13 @@ function view_left() {
 	draw_cube();
 }
 
-function new_obj(type, x, y, z, width, height, depth) {
-	objects.push({x:x,y:y,z:z + depth/2,width:width,height:height,depth:0,type:type});
-	objects.push({x:x,y:y,z:z - depth/2,width:width,height:height,depth:0,type:type});
-	objects.push({x:x + width/2,y:y,z:z,width:0,height:height,depth:depth,type:type});
-	objects.push({x:x - width/2,y:y,z:z,width:0,height:height,depth:depth,type:type});
-	objects.push({x:x,y:y + height/2,z:z,width:width,height:0,depth:depth,type:type});
-	objects.push({x:x,y:y - height/2,z:z,width:width,height:0,depth:depth,type:type});
+function new_obj(type, x, y, z, width, height, depth, identifier) {
+	objects.push({x:x,y:y,z:z + depth/2,width:width,height:height,depth:0,type:type,identifier:identifier});
+	objects.push({x:x,y:y,z:z - depth/2,width:width,height:height,depth:0,type:type,identifier:identifier});
+	objects.push({x:x + width/2,y:y,z:z,width:0,height:height,depth:depth,type:type,identifier:identifier});
+	objects.push({x:x - width/2,y:y,z:z,width:0,height:height,depth:depth,type:type,identifier:identifier});
+	objects.push({x:x,y:y + height/2,z:z,width:width,height:0,depth:depth,type:type,identifier:identifier});
+	objects.push({x:x,y:y - height/2,z:z,width:width,height:0,depth:depth,type:type,identifier:identifier});
 }
 
 function ball(x, y, z) {
