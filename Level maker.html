@@ -18,10 +18,10 @@ canvas {
     border: 5px solid black;
 }
 </style></head><body>
-<div id="blocks"><h3>Ball: 
-    x: <input type="number" size="3" onchange="next_level();" class="x"/>
-    y: <input type="number" size="3" onchange="next_level();" class="y"/>
-    z: <input type="number" size="3" onchange="next_level();" class="z"/>
+<div id="blocks"><button onclick="show_level();">show level</button><div id="level_data"></div><h3>Ball: 
+    x: <input type="number" size="3" onchange="next_level();" class="x" value="0"/>
+    y: <input type="number" size="3" onchange="next_level();" class="y" value="0"/>
+    z: <input type="number" size="3" onchange="next_level();" class="z" value="0"/>
 </h3></div>
 <div><button onclick="add_block();">+</button>
 	 <button onclick="next_level();">Restart level</button></div>
@@ -42,19 +42,7 @@ function next_level() {
 	objects.push({x:500, y:0, z:0, width:0, height:1000, depth:1000, type: "cube_side"}); // right
 	objects.push({x:0, y:500, z:0, width:1000, height:0, depth:1000, type: "cube_side"}); // top
 	objects.push({x:0, y:-500, z:0, width:1000, height:0, depth:1000, type: "cube_side"}); // bottom
-	var values = {x:[],y:[],z:[],height:[],width:[],depth:[]};
-	$("input").each(function() {
-		const number = parseInt(this.value);
-		switch ($(this).attr("class")) {
-			case "x": values.x.push(number); break;
-			case "y": values.y.push(number); break;
-			case "z": values.z.push(number); break;
-			case "height": values.height.push(number); break;
-			case "width": values.width.push(number); break;
-			case "depth": values.depth.push(number); break;
-			default: console.assert(false);
-		}
-	});
+	var values = get_input_data();
 	ball(values.x[0], values.y[0], values.z[0]);
 	new_obj("exit", values.x[1], values.y[1], values.z[1], values.width[0], values.height[0], values.depth[0]);
 	for (var i = 1; i < values.height.length; i++) {
@@ -70,23 +58,62 @@ function next_level() {
 	draw_cube();
 }
 
-const block_input = value => `${value}: <input type="number" size="3" onchange="next_level();" class=${value}> `
+const block_input = value => `${value}: <input type="number" size="3" onchange="next_level();" class=${value} value="0"> `
 $("#blocks").append(`<h3>Exit: 
 	${block_input("x") + block_input("y") + block_input("z")}
 	${block_input("width") + block_input("height") + block_input("depth")}</h3>`);
 
 function add_block() {
 	$("#blocks").append(`
-		<h3 onmouseover="highlight(${current_identifier}, true); $(this).css('background-color', '#ffff00');"
+		<h3 class="block"
+			onmouseover="highlight(${current_identifier}, true); $(this).css('background-color', '#ffff00');"
 			onmouseout="highlight(${current_identifier}, false); $(this).css('background-color', '');">
 		${block_input("x") + block_input("y") + block_input("z")}
 		${block_input("width") + block_input("height") + block_input("depth")}
-		<button onclick="this.parentElement.remove(); next_level();">delete</button></h3>`);
+		<button onclick="this.parentElement.remove(); reidentify_blocks();">delete</button></h3>`);
 }
 
 function highlight(identifier, value) {
 	for (var i = 0; i < objects.length; i++) {
 		if (objects[i].identifier == identifier) objects[i].selected = value;
+	}
+}
+
+function reidentify_blocks() {
+	$("h3.blocks").each(function(identifier) {
+		$(this).attr("onmouseover", `highlight(${identifier}, true); $(this).css('background-color', '#ffff00');`);
+		$(this).attr("onmouseout", `highlight(${identifier}, false); $(this).css('background-color', '');`);
+	});
+	next_level();
+}
+
+function get_input_data() {
+	var values = {x:[],y:[],z:[],height:[],width:[],depth:[]};
+	$("input").each(function() {
+		const number = parseInt(this.value);
+		switch ($(this).attr("class")) {
+			case "x": values.x.push(number); break;
+			case "y": values.y.push(number); break;
+			case "z": values.z.push(number); break;
+			case "height": values.height.push(number); break;
+			case "width": values.width.push(number); break;
+			case "depth": values.depth.push(number); break;
+			default: console.assert(false);
+		}
+	});
+	return values;
+}
+
+function show_level() {
+	const values = get_input_data();
+	$("#level_data").empty();
+	$("#level_data").append(`ball(${values.x[0]}, ${values.y[0]}, ${values.z[0]});<br/>`);
+	$("#level_data").append(
+		`new_obj("exit", ${values.x[1]}, ${values.y[1]}, ${values.z[1]},
+		${values.width[0]}, ${values.height[0]}, ${values.depth[0]});</br>`);
+	for (var i = 1; i < values.height.length; i++) {	
+		$("#level_data").append(`new_obj("wall", ${values.x[i + 1]}, ${values.y[i + 1]}, ${values.z[i + 1]},
+			${values.width[i]}, ${values.height[i]}, ${values.depth[i]});<br/>`);
 	}
 }
 </script></body></html>
